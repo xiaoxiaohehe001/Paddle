@@ -230,6 +230,7 @@ class Graph {
     auto *x =
         AddNode(new ir::Node(var_desc, block_id == -1 ? block_id_ : block_id));
     x->SetId(num_node_created_++);
+    LOG(INFO) << x->Name() << ", " << x->id(); 
     x->SetGraphId(block_id_);
     return x;
   }

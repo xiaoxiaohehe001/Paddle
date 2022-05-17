@@ -368,13 +368,13 @@ void TrtEngine::FreshDeviceId() {
 
 void TrtEngine::GetEngineInfo() {
 #if IS_TRT_VERSION_GE(8200)
-  LOG(INFO) << "====== engine info ======";
+  //LOG(INFO) << "====== engine info ======";
   std::unique_ptr<nvinfer1::IEngineInspector> infer_inspector(
       engine_->createEngineInspector());
   infer_inspector->setExecutionContext(contexts_.front().get());
   LOG(INFO) << infer_inspector->getEngineInformation(
       nvinfer1::LayerInformationFormat::kONELINE);
-  LOG(INFO) << "====== engine info end ======";
+  //LOG(INFO) << "====== engine info end ======";
 #else
   LOG(INFO) << "Inspector needs TensorRT version 8.2 and after.";
 #endif

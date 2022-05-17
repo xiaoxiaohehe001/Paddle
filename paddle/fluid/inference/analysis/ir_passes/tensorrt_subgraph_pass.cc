@@ -93,13 +93,19 @@ std::string GenerateEngineKey(const std::set<std::string> &engine_inputs,
                               const std::string &precision,
                               const bool for_calibration) {
   std::string engine_hash_key = "";
+  int index_in = 0;
+  int index_out = 0;
   for (auto name : engine_inputs) {
+    //LOG(INFO) << "engine in " << index_in << ": "<< name;
     engine_hash_key += name;
     engine_hash_key += "#";
+    index_in++;
   }
   for (auto name : engine_outputs) {
+    //LOG(INFO) << "engine out " << index_out << ": "<< name;
     engine_hash_key += name;
     engine_hash_key += "#";
+    index_out++;
   }
   engine_hash_key += predictor_id;
   if (!for_calibration) {
@@ -110,8 +116,8 @@ std::string GenerateEngineKey(const std::set<std::string> &engine_inputs,
   engine_hash_key += precision;
 
   auto engine_key = std::to_string(std::hash<std::string>()(engine_hash_key));
-  VLOG(2) << "TRT engine hash key: " << engine_hash_key;
-  VLOG(2) << "TRT engine key: " << engine_key;
+  LOG(INFO) << "TRT engine hash key: " << engine_hash_key;
+  LOG(INFO) << "TRT engine key: " << engine_key;
   return engine_key;
 }
 
@@ -161,6 +167,7 @@ void TensorRtSubgraphPass::CreateTensorRTOp(
   // The node->inputs contains input tensors and parameters.
   for (auto *x : node->inputs) {
     input_names.insert(x->Name());
+    LOG(INFO) << x->Name() << ", " << x->id();
     input_names_with_id.insert(x->Name() + std::to_string(x->id()));
     if (std::count(graph_params.begin(), graph_params.end(), x->Name()) > 0) {
       params.push_back(x->Name());
