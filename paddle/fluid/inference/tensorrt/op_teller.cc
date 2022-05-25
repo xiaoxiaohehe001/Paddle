@@ -429,11 +429,20 @@ bool OpTeller::Tell(const framework::ir::Node* node, bool use_no_calib_int8,
         for (auto& var_name : param_name.second) {
           auto* var_desc = block->FindVar(var_name);
           const auto shape = var_desc->GetShape();
-          if (shape.size() < 3) {
-            VLOG(3)
-                << "matmul op dims < 3 not supported in tensorrt, but got dims "
-                << shape.size() << ", so jump it.";
-            return false;
+          if (with_dynamic_shape) {
+            if (shape.size() < 2) {
+              VLOG(3) << "matmul op dims < 2 not supported in tensorrt "
+                         "with_dynamic_shape, but got dims "
+                      << shape.size() << ", so jump it.d";
+              return false;
+            }
+          } else {
+            if (shape.size() < 3) {
+              VLOG(3) << "matmul op dims < 3 not supported in tensorrt, but "
+                         "got dims "
+                      << shape.size() << ", so jump it.d";
+              return false;
+            }
           }
         }
       }
@@ -1385,14 +1394,6 @@ bool OpTeller::Tell(const framework::ir::Node* node, bool use_no_calib_int8,
         if (desc.Input("RoisNum").size() >= 1) {
           return false;
         }
-      }
-    }
-
-    if (op_type == "shuffle_channel") {
-      if (with_dynamic_shape) {
-        VLOG(3) << "You are running the TRT Dynamic Shape mode, "
-                   "the shuffle_channel op does not support dynamic shape yet";
-        return false;
       }
     }
 
