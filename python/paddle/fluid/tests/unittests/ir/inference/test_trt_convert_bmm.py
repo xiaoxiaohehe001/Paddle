@@ -30,38 +30,35 @@ class TrtConvertBmmTest_dynamic(TrtLayerAutoScanTest):
             return np.random.random(shape).astype(np.float32)
 
         for batch in [10, 11, 12, 13, 14, 15]:
-            for trans_x in [False]:
-                for trans_y in [False]:
-                    input1_shape = [batch, 350, 75]
-                    input2_shape = [batch, 75, 25]
-                    dics = [{}]
-                    ops_config = [{
-                        "op_type": "bmm",
-                        "op_inputs": {
-                            "X": ["input1_data"],
-                            "Y": ["input2_data"]
-                        },
-                        "op_outputs": {
-                            "Out": ["output_data"]
-                        },
-                        "op_attrs": dics[0]
-                    }]
-                    ops = self.generate_op_config(ops_config)
+            input1_shape = [batch, 350, 75]
+            input2_shape = [batch, 75, 25]
+            dics = [{}]
+            ops_config = [{
+                "op_type": "bmm",
+                "op_inputs": {
+                    "X": ["input1_data"],
+                    "Y": ["input2_data"]
+                },
+                "op_outputs": {
+                    "Out": ["output_data"]
+                },
+                "op_attrs": dics[0]
+            }]
+            ops = self.generate_op_config(ops_config)
 
-                    program_config = ProgramConfig(
-                        ops=ops,
-                        weights={},
-                        inputs={
-                            "input1_data":
-                            TensorConfig(
-                                data_gen=partial(generate_input, input1_shape)),
-                            "input2_data":
-                            TensorConfig(
-                                data_gen=partial(generate_input, input2_shape))
-                        },
-                        outputs=["output_data"])
+            program_config = ProgramConfig(
+                ops=ops,
+                weights={},
+                inputs={
+                    "input1_data":
+                    TensorConfig(
+                        data_gen=partial(generate_input, input1_shape)),
+                    "input2_data":
+                    TensorConfig(data_gen=partial(generate_input, input2_shape))
+                },
+                outputs=["output_data"])
 
-                    yield program_config
+            yield program_config
 
     def sample_predictor_configs(
             self, program_config) -> (paddle_infer.Config, List[int], float):
